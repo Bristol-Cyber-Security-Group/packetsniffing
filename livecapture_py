@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import sys
+import socket
+import errno
+import json
+from scapy.all import *
+#from scapy.layers.dns import DNS, DNSQR, DNSRR, IP, UDP
+#from scapy.sendrecv import sr1
+
+# def reverse(ip):
+# if len(ip) <= 1:
+# return ip
+# return '.'.join(ip.split('.')[::-1])
+
+
+def reverse_dns_name(pkt):
+    # hostName=reverse(pkt[IP])
+    #hostRName=sr1(IP(dst="8.8.8.8")/UDP()/DNS(rd=1,qd=DNSQR(qname="hostName.in-addr.arpa", qtype='PTR')))
+    f = open("reversedns.txt", "a")
+    if ARP in pkt and pkt[ARP].op in (1, 2):  # who-has or is-at
+        f.write("The ARP Hardware Source is {} and address is {} \n".format(
+            pkt[ARP].hwsrc, pkt[ARP].psrc))
+    else:
+        hostName = socket.gethostbyaddr(pkt[IP].dst)
+        e = socket.herror
+        if e.errno == 1:
+            print('IP address has no DNS record \n')
+        elif e.errno == 2:
+            print('DNS server is temporarily unavailable \n')
+        else:
+            #f = open("reverse.txt", "a")
+            f.write("IP address {} Host Name {} Protocol {}\n".format(
+                pkt[IP].dst, hostName, pkt[IP].proto))
+        f = open("detailedreportv1.txt", "a")
+        f.write("\n"''.join((pkt.show2(dump=True).split('\n'))))
+        # while true:
+        #g = open("detailed.txt", "a")
+        #g.write("Detailed Information \n".format(pkt[IP].show()))
+    # hostRName.show()
+
+
+sniff(prn=reverse_dns_name)
