@@ -14,7 +14,7 @@ def readcap(packet):
         destination_port = packet[packet.transport_layer].dstport
         dstName = socket.gethostbyaddr(packet.ip.dst)
         packetlength = len(packet)
-        with open("pcapfromexcel.csv", "a", encoding="UTF8") as f:
+        with open("excelfrompcap.csv", "a", encoding="UTF8") as f:
             writer = csv.writer(f)
         #f = open("reversednsv4.txt", "a")
             row = [packet.ip.src, packet.ip.dst,
