@@ -4,6 +4,7 @@ import sys
 import socket
 import errno
 import json
+import csv
 from scapy.all import *
 #from scapy.layers.dns import DNS, DNSQR, DNSRR, IP, UDP
 #from scapy.sendrecv import sr1
@@ -21,19 +22,23 @@ def reverse_dns_name(pkt):
         f.write("The ARP Hardware Source is {} and address is {} \n".format(
             pkt[ARP].hwsrc, pkt[ARP].psrc))
     else:
-        hostName = socket.gethostbyaddr(pkt[IP].dst)
+        dstName = socket.gethostbyaddr(pkt[IP].dst)
         e = socket.herror
         if e.errno == 1:
             print('IP address has no DNS record \n')
         elif e.errno == 2:
             print('DNS server is temporarily unavailable \n')
         else:
-            
-            f.write("IP address {} Host Name {} Protocol {}\n".format(
-                pkt[IP].dst, hostName, pkt[IP].proto))
-        f = open("detailedreportv1.txt", "a")
-        f.write("\n"''.join((pkt.show2(dump=True).split('\n'))))
-        
+            with open("livecapture.csv", "a", encoding="UTF8") as f:
+            	writer = csv.writer(f)
+        #f = open("reversednsv4.txt", "a")
+            	row = [pkt[IP].src, pkt[IP].dst,
+                   dstName, pkt[IP].proto]
+            	writer.writerow(row)
+            # f.write("IP address {} Host Name {} Protocol {}\n".format(
+            # pkt[IP].dst, hostName, pkt[IP].proto))
+        #f = open("detailedreportv1.txt", "a")
+        # f.write("\n"''.join((pkt.show2(dump=True).split('\n'))))
 
 
 sniff(prn=reverse_dns_name)
