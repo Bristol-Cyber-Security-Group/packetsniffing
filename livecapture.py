@@ -17,6 +17,7 @@ from scapy.all import *
 
 def reverse_dns_name(pkt):
     #hostname=sr1(IP(dst="8.8.8.8")/UDP()/DNS(rd=1,qd=DNSQR(qname="hostName.in-addr.arpa", qtype='PTR')))
+    headernames = ["Source","Destination", "Name", "Protocol"]
     f = open("reversedns.txt", "a")
     if ARP in pkt and pkt[ARP].op in (1, 2):  # who-has or is-at
         f.write("The ARP Hardware Source is {} and address is {} \n".format(

@@ -12,11 +12,16 @@ def readcap(packet):
         source_port = packet[packet.transport_layer].srcport
         destination_address = packet.ip.dst
         destination_port = packet[packet.transport_layer].dstport
-        dstName = socket.gethostbyaddr(packet.ip.dst)
         packetlength = len(packet)
-        with open("excelfrompcap.csv", "a", encoding="UTF8") as f:
+        # if ARP in packet and packet[ARP].op in (1, 2):  # who-has or is-at
+        #   print("The ARP Hardware Source is {} and address is {} \n".format(
+        #      packet[ARP].hwsrc, packet[ARP].psrc))
+        # else:
+        dstName = socket.gethostbyaddr(packet.ip.dst)
+        # packetlength = len(packet)
+        with open("excelfrommyregistration.csv", "a", encoding="UTF8") as f:
             writer = csv.writer(f)
-        #f = open("reversednsv4.txt", "a")
+        # f = open("reversednsv4.txt", "a")
             row = [packet.ip.src, packet.ip.dst,
                    dstName, packet.ip.proto, packet.ip.len]
             writer.writerow(row)
@@ -25,7 +30,7 @@ def readcap(packet):
         pass
 
 
-cap = pyshark.FileCapture('rephrain-1.pcap')
+cap = pyshark.FileCapture('registration.pcapng')
 res = []
 for packet in cap:
     lists = readcap(packet)
