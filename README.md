@@ -4,23 +4,25 @@ The offline capture is a simple sniffing.
 The readpcap.py will read pcap files and output a csv file with source destination, protocol, size and hostname of the destination
 There are duplicates as of now.
 
-installing pyshark
-git clone https://github.com/KimiNewt/pyshark.git
-cd pyshark/src
-sudo python3 setup.py install
-sudo apt-get install tshark
+sudo apt install python3-autopep8 <br/>
 
-installing scapy
-git clone https://github.com/secdev/scapy.git
-cd scapy
-sudo python3 setup.py install
+installing pyshark <br/>
+git clone https://github.com/KimiNewt/pyshark.git<br/>
+cd pyshark/src <br/>
+sudo python3 setup.py install <br/>
+sudo apt-get install tshark <br/>
 
-git clone git@github.com:matplotlib/matplotlib.git
-cd matplotlib
-python3 -m pip install -e
+installing scapy <br/>
+git clone https://github.com/secdev/scapy.git <br/>
+cd scapy <br/>
+sudo python3 setup.py install <br/>
 
-Running
-chmod +x <script>.py
-sudo ./<script>.py
-sudo apt install python3-autopep8
+git clone git@github.com:matplotlib/matplotlib.git <br/>
+cd matplotlib <br/>
+python3 -m pip install -e <br/>
+
+Running<br/>
+chmod +x <script>.py<br/>
+sudo ./<script>.py<br/>
+
 
