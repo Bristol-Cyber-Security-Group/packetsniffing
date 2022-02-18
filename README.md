@@ -5,6 +5,8 @@ The readpcap.py will read pcap files and output a csv file with source destinati
 There are duplicates as of now.
 
 sudo apt install python3-autopep8 <br/>
+autopep8 -i <script>.py<br/>
+sudo apt-get install python3-pandas<br/>
 
 installing pyshark <br/>
 git clone https://github.com/KimiNewt/pyshark.git<br/>
