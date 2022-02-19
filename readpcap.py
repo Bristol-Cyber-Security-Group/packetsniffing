@@ -10,7 +10,7 @@ from scapy.all import *
 def readcap(packet):
     # print(packet)
     # return
-    with open("csvfrommessages2.csv", "a", encoding="UTF8") as f:
+    with open("csvfrommessages.csv", "a", encoding="UTF8") as f: # change file name
 
         writer = csv.writer(f)
 
@@ -35,4 +35,4 @@ def readcap(packet):
 
 
 
-cap = sniff(offline = 'messages.pcapng', prn=readcap)
+cap = sniff(offline = 'messages.pcapng', prn=readcap) # change file name
