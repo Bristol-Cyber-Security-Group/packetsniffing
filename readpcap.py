@@ -11,7 +11,7 @@ import urllib.request as ur
 
 def readcap(packet):
     load_layer('tls')
-    with open("csvfrommessagesv6.csv", "a", encoding="UTF8") as f:  # change file name
+    with open("csvfrommessageswithoutlocation.csv", "a", encoding="UTF8") as f:  # change file name
         writer = csv.writer(f)
         try:
              if ARP in packet and packet[ARP].op in (1, 2):
@@ -23,8 +23,8 @@ def readcap(packet):
                     with ur.urlopen("https://geolocation-db.com/jsonp/"+packet[IP].dst) as url:
                         data = url.read().decode()
                         data = data.split("(")[1].strip(")")
-                        rows = [packet[IP].src, packet[IP].dst,
-                                dstName, packet[IP].proto, packet[IP].len, data]
+                        rows = [packet[IP].src, packet[IP].sport, packet[IP].dst,packet[IP].dport, 
+                                dstName, packet[IP].proto, packet[IP].len, packet[IP].tos] 
                         writer.writerow(rows)
 
         except Exception as e:
