@@ -31,7 +31,7 @@ try:
     gmap = gmplot.GoogleMapPlotter(Latitude[0],Longitude[0], 5)
     gmap.scatter(Latitude,Longitude, colors[0], edge_width=10)
     gmap.polygon(Latitude, Longitude, color = 'cornflowerblue')
-    gmap.apikey = "AIzaSyA9I9P6BiSTthk7K5VkZ0Ms79DLPcVRo4E"
+    gmap.apikey = "Please Ask Me For The Key"
     gmap.draw("map.html")
 except Exception as e:
   print(e)  
