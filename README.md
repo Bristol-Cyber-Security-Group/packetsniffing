@@ -25,6 +25,6 @@ python3 -m pip install -e <br/>
 
 Running<br/>
 chmod +x <script>.py<br/>
-sudo ./readme.py <name.pcapng> <outputname.csv> <outputmapname.html><br/>
+sudo ./readme.py <inputfilename.pcapng> <outputname.csv> <outputmapname.html><br/>
 
 
