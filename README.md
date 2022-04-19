@@ -33,7 +33,7 @@ from the captured packets and then generates strong rules out of the captured pa
 
 The ALM_Apriori.py can also be executed using Google Colab.
 
-## Requirements 
+## Requirements
 pip install apriori
 pip install apyori
 
