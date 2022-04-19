@@ -31,6 +31,8 @@ sudo ./readme.py <inputfilename.pcapng> <outputname.csv> <outputmapname.html><br
 There is a ALM_Apriori.py file which is a Association Rule Mining w/ Apriori Algorithm code. The code extracts frequent and interesting combinations
 from the captured packets and then generates strong rules out of the captured packets.
 
+The ALM_Apriori.py can also be executed using Google Colab.
+
 ## Requirements 
 pip install apriori
 pip install apyori
