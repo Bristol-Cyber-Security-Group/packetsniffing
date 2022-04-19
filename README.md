@@ -27,4 +27,10 @@ Running<br/>
 chmod +x <script>.py<br/>
 sudo ./readme.py <inputfilename.pcapng> <outputname.csv> <outputmapname.html><br/>
 
+# Association Rule Mining with Apriori Algorithm
+There is a ALM_Apriori.py file which is a Association Rule Mining w/ Apriori Algorithm code. The code extracts frequent and interesting combinations
+from the captured packets and then generates strong rules out of the captured packets.
 
+## Requirements 
+pip install apriori
+pip install apyori
