@@ -35,7 +35,6 @@ The ALM_Apriori.py can also be executed using Google Colab.
 
 ## Requirements 
 pip install apriori
-
 pip install apyori
 
 ## Support
