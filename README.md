@@ -35,4 +35,14 @@ The ALM_Apriori.py can also be executed using Google Colab.
 
 ## Requirements 
 pip install apriori
+
 pip install apyori
+
+## Support
+To compute support, the formula is Support(A) = (Dataset containing (A))/(Dataset)
+
+## Confidence
+To compute confidence, the formula is Confidence(A→B) = (Dataset containing both (A and B))/(Dataset containing A)
+
+## Lift
+To compute lift, the formula is Lift(A→B) = (Confidence (A→B))/(Support (B))
