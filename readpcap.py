@@ -25,7 +25,6 @@ def readcap2(pcap):
         for pp in pcap:
             try:
 
-                # TODO - why is this still the time of analysis rather than packet's time?
                 packet_time = datetime.fromtimestamp(pp.time)
                 ip_layer = pp.getlayer(IP)
                 dns_layer = pp.getlayer(DNS)
@@ -115,24 +114,23 @@ def unique_report():
     report.to_csv("report_"+sys.argv[2], index=False)
 
 
-# TODO - add unique location ip code here, dont need to save the intermediate
-
 # TODO - any optimisations possible, even 10k packets from a few seconds capture takes a while
 #      - potentially skip the payloads by using "IP.payload_guess = []"
 #      - consider using PcapReader rather than rdpcap
 #      - consider using PyPy to speed up the runtime?
 #      - consider parsing the pcap file without scapy... tshark directly with filters or compiled language
-# TODO - remove the print statements, or make them proper logs
 # TODO - address the deprecation warnings
-# TODO - take the intermediate parsed csv and create the report also
-# TODO - report: take the unique ips and do location lookup
+# TODO - local ip addresses and mac addresses are present, may not be relevant for some analysis - option to remove?
 
 
-# TODO  disabled for the moment for debugging intermediary output
-# cap = rdpcap(sys.argv[1])
-# readcap2(cap)
-# print("n packets processed =", packet_counter)
-# addheaders()
+# create an empty csv for the scapy output
+f = open(sys.argv[1], "a")
+f.close()
+
+cap = rdpcap(sys.argv[1])
+readcap2(cap)
+print("n packets processed =", packet_counter)
+addheaders()
 
 # create the report of unique ips
 print("creating report...")
