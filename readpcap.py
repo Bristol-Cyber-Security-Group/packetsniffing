@@ -8,40 +8,14 @@ import json
 from scapy.all import *
 import urllib.request as ur
 import pandas as pd
-# import gmplot
-import numpy as np
 import sys
 from datetime import datetime
 load_layer('tls')
 IP_PROTOS = load_protocols("/etc/protocols")
 
 packet_counter = 0
-
-# def readcap(packet):
-#     global packet_counter
-#     with open(sys.argv[2], "a", encoding="UTF8") as f:
-#         writer = csv.writer(f)
-#         packet_counter += 1
-#         try:
-#             delta = datetime.fromtimestamp(packet[IP].time) - datetime(2023, 6, 23, 10, 28, 17)
-#             actual_time = datetime.fromtimestamp(packet[IP].time) - delta
-#             print(datetime.fromtimestamp(packet[IP].time), "-", datetime(2023, 6, 23, 10, 28, 17), "delta =", delta, actual_time, actual_time)
-#             if ARP in packet and packet[ARP].op in (1, 2):
-#                 row = [packet[ARP].hwsrc, packet[ARP].psrc, 0, 0, 0, 0]
-#                 writer.writerow(row)
-#
-#             else:
-#                 dstName = socket.gethostbyaddr(packet[IP].dst)
-#                 with ur.urlopen("https://geolocation-db.com/jsonp/"+packet[IP].dst) as url:
-#                     data = url.read().decode()
-#                     data = json.loads(data.split("(")[1].strip(")"))
-#                     rows = [packet[IP].src, packet[IP].sport, packet[IP].dst, packet[IP].dport,
-#                             dstName, packet[IP].proto, packet[IP].len, packet[IP].tos, data['country_name'], actual_time]
-#                     writer.writerow(rows)
-#
-#         except Exception as e:
-#             print(e)
-#             pass
+headerList = ['Source', 'SrcPort', 'Destination', 'DstPort', 'Name', 'Protocol', 'Length', 'Service', 'Country', 'Time']
+report_headers = ["Destination IP", "Name", "Country"]
 
 
 def readcap2(pcap):
@@ -51,6 +25,7 @@ def readcap2(pcap):
         for pp in pcap:
             try:
 
+                # TODO - why is this still the time of analysis rather than packet's time?
                 packet_time = datetime.fromtimestamp(pp.time)
                 ip_layer = pp.getlayer(IP)
                 dns_layer = pp.getlayer(DNS)
@@ -92,58 +67,74 @@ def readcap2(pcap):
             packet_counter += 1
 
 
-def get_ip_hostnames(packet_csv):
-    # to save time
-    # get all unique dst ip addresses, then ping the geolocation site
-    # then insert the geolocation for each unique ip
-    pass
-
-
 def addheaders():
-
     file = pd.read_csv(sys.argv[2])
-    headerList = ['Source', 'Port', 'Destination', 'Port', 'Name', 'Protocol', 'Length', 'Service', 'Country', 'Time']
-    file.to_csv(sys.argv[1], header=headerList, index=False)
+    file.to_csv(sys.argv[2], header=headerList, index=False)
 
 
-def uniqueipandmap():
-    file = pd.read_csv(sys.argv[2])  # Please insert the csv file
-    colors = ['red', 'blue', 'green', 'purple',
-              'orange', 'yellow', 'pink', 'white']
-    Latitude = []
-    Longitude = []
+def get_location(in_ip):
     try:
-        file2 = pd.DataFrame(file.groupby(['Destination']).count())
-        for i in file2.index:
-            try:
-                with ur.urlopen("https://geolocation-db.com/jsonp/"+i) as url:
-                    data = url.read().decode()
-                    data = json.loads(data.split("(")[1].strip(")"))
-                    dstname = socket.gethostbyaddr(i)
-                    print(i, dstname, data['country_name'])
-                    Latitude.append(float(data['latitude']))
-                    Longitude.append(float(data['longitude']))
-            except Exception as e:
-                #print(e)
-                pass
-        # gmap = gmplot.GoogleMapPlotter(Latitude[0], Longitude[0], 5)
-        # gmap.scatter(Latitude, Longitude, colors[0], edge_width=10)
-        # gmap.polygon(Latitude, Longitude, color='cornflowerblue')
-        # gmap.apikey = "Please Ask Me"
-        # gmap.draw("map.html")
+        with ur.urlopen("https://geolocation-db.com/jsonp/" + in_ip) as url:
+            data = url.read().decode()
+            data = json.loads(data.split("(")[1].strip(")"))
+            # return float(data['latitude']), float(data['longitude'])
+            return data['country_name']
     except Exception as e:
-        #print(e)
-        pass
+        # could not get location
+        return None
+
+
+def unique_report():
+    # read the output csv from the processed pcap
+    processed_pcap_csv = pd.read_csv(sys.argv[2])
+    grouped = processed_pcap_csv.groupby(["Destination"]).count()
+    # create a report dataframe that will be filled with data from the unique dataframe
+    # and a location lookup
+    # report = pd.DataFrame(columns=report_headers)
+    new_rows = []
+    for row in grouped.index:
+
+        # get one of the rows for that destination based on the unique ip
+        unique_row = processed_pcap_csv[processed_pcap_csv["Destination"] == row].iloc[0]
+        # get hostname, could be NaN TODO: a different lookup for hostname
+        hostname = unique_row["Name"]
+        # get location as a tuple or None
+        # if is a mac address then skip
+        if ":" in row:
+            print("skipped a mac address", row)
+            location = None
+        else:
+            location = get_location(row)
+
+        new_rows.append({
+            "Destination IP": row,
+            "Name": hostname,
+            "Country": location,
+        })
+    report = pd.DataFrame(new_rows, columns=report_headers)
+    report.to_csv("report_"+sys.argv[2], index=False)
+
 
 # TODO - add unique location ip code here, dont need to save the intermediate
 
-# adding headers
-# b = addheaders()
-# reading packet capture
-# cap = sniff(offline= sys.argv[1], prn=readcap)
-cap = rdpcap(sys.argv[1])
-readcap2(cap)
-# builds map but disabled since we dont need the map and dont use the google api
-# c = uniqueipandmap()
+# TODO - any optimisations possible, even 10k packets from a few seconds capture takes a while
+#      - potentially skip the payloads by using "IP.payload_guess = []"
+#      - consider using PcapReader rather than rdpcap
+#      - consider using PyPy to speed up the runtime?
+#      - consider parsing the pcap file without scapy... tshark directly with filters or compiled language
+# TODO - remove the print statements, or make them proper logs
+# TODO - address the deprecation warnings
+# TODO - take the intermediate parsed csv and create the report also
+# TODO - report: take the unique ips and do location lookup
 
-print("n packets =", packet_counter)
+
+# TODO  disabled for the moment for debugging intermediary output
+# cap = rdpcap(sys.argv[1])
+# readcap2(cap)
+# print("n packets processed =", packet_counter)
+# addheaders()
+
+# create the report of unique ips
+print("creating report...")
+unique_report()
+
