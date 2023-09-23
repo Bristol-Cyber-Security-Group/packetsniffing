@@ -6,7 +6,12 @@ The currently supported and up-to-date script is "readpcap.py" which will take a
 The other scripts are WIP.
 # Installation
 
-Install poetry and run `poetry install` in this folder.
+We recommend using poetry to manage the python environment, although it is possible to just use pip or conda.
+If you want to use these alternatives, create the respective requirements/environment file with the same package versions in the `pyproject.toml` file.
+
+Install python v3.8.17 or install and use `pyenv` to manage the python environment.
+
+Install poetry, set the python version with `poetry env use 3.8.17` and then run `poetry install` in this folder.
 You can then either run for example:
 
 `poetry run python readpcap.py <pcap file location> <desired output csv name>`
